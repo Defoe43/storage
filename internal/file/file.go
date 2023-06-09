@@ -1,6 +1,8 @@
 package file
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type File struct {
 	ID   uuid.UUID
