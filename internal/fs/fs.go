@@ -36,3 +36,24 @@ func DeleteFile(filename string) error {
 
 	return nil
 }
+
+func CheckDirectory(path string) (err error) {
+	if _, err = os.Stat(path); os.IsNotExist(err) {
+		err = createDirectory(path)
+	}
+
+	return err
+}
+
+func createDirectory(path string) error {
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		if os.IsExist(err) {
+			return nil
+		} else {
+			return err
+		}
+	}
+
+	return nil
+}

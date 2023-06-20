@@ -3,11 +3,16 @@ package handlers
 import (
 	"fmt"
 	"github.com/dat-guy-defoe/storage/internal/fs"
+	mongodb "github.com/dat-guy-defoe/storage/internal/repo"
 	"github.com/gorilla/mux"
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
+
+var storagePath = os.Getenv("storagePath")
 
 func BuildHandler() http.Handler {
 	router := mux.NewRouter()
@@ -25,6 +30,10 @@ func root(w http.ResponseWriter, r *http.Request) {
 }
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
+	defer func(start time.Time) {
+		fmt.Printf("uploadFile exec in: %v\n", time.Since(start))
+	}(time.Now())
+
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		log.Println("Error retrieving the file")
@@ -44,19 +53,11 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileExists := fs.IsFileExist("./" + handler.Filename)
-	if fileExists {
-		log.Printf("File %s already exists", handler.Filename)
-		http.Error(w, fmt.Sprintf("File %s already exists", handler.Filename), http.StatusBadRequest)
+	db := mongodb.GetDatabase()
 
-		return
-	}
-
-	err = fs.WriteFile("./"+handler.Filename, fileBytes)
+	err = db.PutFile(handler.Filename, fileBytes)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Error saving the file", http.StatusInternalServerError)
-
 		return
 	}
 
@@ -65,36 +66,42 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func downloadFile(w http.ResponseWriter, r *http.Request) {
+	defer func(start time.Time) {
+		fmt.Printf("downloadFile exec in: %v\n", time.Since(start))
+	}(time.Now())
+
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	file, err := fs.GetFile("./" + filename)
+	db := mongodb.GetDatabase()
+
+	stream, err := db.GetFile(filename)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("File %s not found", filename), http.StatusNotFound)
+		log.Println(err)
+		http.Error(w, "Failed to get the file", http.StatusInternalServerError)
 
 		return
 	}
-	defer file.Close()
+	defer stream.Close()
 
-	fileInfo, err := file.Stat()
-	if err != nil {
-		http.Error(w, "Failed to get file info", http.StatusInternalServerError)
-
-		return
-	}
-
-	fileLength := fmt.Sprintf("%d", fileInfo.Size())
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Length", fileLength)
 	w.Header().Set("Content-Disposition", "attachment; filename="+filename)
-	http.ServeContent(w, r, filename, fileInfo.ModTime(), file)
+	_, err = io.Copy(w, stream)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Failed to get the file", http.StatusInternalServerError)
+	}
 }
 
 func deleteFile(w http.ResponseWriter, r *http.Request) {
+	defer func(start time.Time) {
+		fmt.Printf("deleteFile exec in: %v\n", time.Since(start))
+	}(time.Now())
+
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	fileExists := fs.IsFileExist("./" + filename)
+	fileExists := fs.IsFileExist(storagePath + filename)
 	if !fileExists {
 		log.Printf("File %s does not exist", filename)
 		http.Error(w, fmt.Sprintf("File %s does not exist", filename), http.StatusNotFound)
@@ -102,7 +109,7 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := fs.DeleteFile(filename)
+	err := fs.DeleteFile(storagePath + filename)
 	if err == nil {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
