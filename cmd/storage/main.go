@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/dat-guy-defoe/storage/api/handlers"
-	mongodb "github.com/dat-guy-defoe/storage/internal/repo"
+	mongodb "github.com/dat-guy-defoe/storage/internal/repo/mongo"
 	"log"
 	"net/http"
 	"os"

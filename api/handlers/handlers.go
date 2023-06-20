@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"github.com/dat-guy-defoe/storage/internal/fs"
-	mongodb "github.com/dat-guy-defoe/storage/internal/repo"
+	mongodb "github.com/dat-guy-defoe/storage/internal/repo/mongo"
 	"github.com/gorilla/mux"
 	"io"
 	"log"
