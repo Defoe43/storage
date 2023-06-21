@@ -2,28 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/dat-guy-defoe/storage/internal/fs"
 	mongodb "github.com/dat-guy-defoe/storage/internal/repo/mongo"
 	"github.com/gorilla/mux"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
-
-var storagePath = os.Getenv("storagePath")
-
-func BuildHandler() http.Handler {
-	router := mux.NewRouter()
-
-	router.HandleFunc("/", root).Methods("GET")
-	router.HandleFunc("/files/put", uploadFile).Methods("PUT")
-	router.HandleFunc("/files/get/{fileName}", downloadFile).Methods("GET")
-	router.HandleFunc("/files/delete/{fileName}", deleteFile).Methods("DELETE")
-
-	return router
-}
 
 func root(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("Unrecognized path"))
@@ -101,19 +86,14 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	fileExists := fs.IsFileExist(storagePath + filename)
-	if !fileExists {
-		log.Printf("File %s does not exist", filename)
-		http.Error(w, fmt.Sprintf("File %s does not exist", filename), http.StatusNotFound)
+	db := mongodb.GetDatabase()
+	err := db.DeleteFile(filename)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to delete file %s", filename), http.StatusInternalServerError)
 
 		return
 	}
 
-	err := fs.DeleteFile(storagePath + filename)
-	if err == nil {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	} else {
-		http.Error(w, fmt.Sprintf("Failed to delete file %s", filename), http.StatusInternalServerError)
-	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("OK"))
 }
