@@ -30,3 +30,12 @@ func (c *Connection) GetObject(filename string) ([]byte, error) {
 
 	return data, nil
 }
+
+func (c *Connection) DeleteObject(filename string) error {
+	err := c.client.RemoveObject("log-files", filename)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

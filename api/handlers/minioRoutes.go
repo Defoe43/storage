@@ -56,7 +56,7 @@ func minioUploadFile(w http.ResponseWriter, r *http.Request) {
 
 func minioDownloadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
-		fmt.Printf("downloadFile exec in: %v\n", time.Since(start))
+		fmt.Printf("minioDownloadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
 
 	vars := mux.Vars(r)
@@ -82,4 +82,30 @@ func minioDownloadFile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to get the file", http.StatusInternalServerError)
 	}
+}
+
+func minioDeleteFile(w http.ResponseWriter, r *http.Request) {
+	defer func(start time.Time) {
+		fmt.Printf("minioDeleteFile exec in: %v\n", time.Since(start))
+	}(time.Now())
+
+	vars := mux.Vars(r)
+	filename := vars["fileName"]
+
+	objSt, err := minio.GetClient()
+	if err != nil {
+		http.Error(w, "Failed to delete the file", http.StatusInternalServerError)
+
+		return
+	}
+
+	err = objSt.DeleteObject(filename)
+	if err != nil {
+		http.Error(w, "Failed to delete the file", http.StatusInternalServerError)
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("OK"))
 }

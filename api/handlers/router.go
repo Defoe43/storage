@@ -14,6 +14,7 @@ func BuildHandler() http.Handler {
 	router.HandleFunc("/files/get/{fileName}", downloadFile).Methods("GET")
 	router.HandleFunc("/os/get/{fileName}", minioDownloadFile).Methods("GET")
 	router.HandleFunc("/files/delete/{fileName}", deleteFile).Methods("DELETE")
+	router.HandleFunc("/os/delete/{fileName}", minioDeleteFile).Methods("DELETE")
 
 	return router
 }
