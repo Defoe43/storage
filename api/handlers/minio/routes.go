@@ -1,4 +1,4 @@
-package handlers
+package minio
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func minioUploadFile(w http.ResponseWriter, r *http.Request) {
+func UploadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("minioUploadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
@@ -54,7 +54,7 @@ func minioUploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("OK"))
 }
 
-func minioDownloadFile(w http.ResponseWriter, r *http.Request) {
+func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("minioDownloadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
@@ -84,7 +84,7 @@ func minioDownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func minioDeleteFile(w http.ResponseWriter, r *http.Request) {
+func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("minioDeleteFile exec in: %v\n", time.Since(start))
 	}(time.Now())

@@ -1,4 +1,4 @@
-package handlers
+package mongo
 
 import (
 	"fmt"
@@ -10,11 +10,7 @@ import (
 	"time"
 )
 
-func root(w http.ResponseWriter, r *http.Request) {
-	_, _ = w.Write([]byte("Unrecognized path"))
-}
-
-func uploadFile(w http.ResponseWriter, r *http.Request) {
+func UploadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("uploadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
@@ -50,7 +46,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("OK"))
 }
 
-func downloadFile(w http.ResponseWriter, r *http.Request) {
+func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("downloadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
@@ -78,7 +74,7 @@ func downloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteFile(w http.ResponseWriter, r *http.Request) {
+func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("deleteFile exec in: %v\n", time.Since(start))
 	}(time.Now())
