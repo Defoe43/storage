@@ -14,7 +14,7 @@ import (
 var serverPort = os.Getenv("serverPort")
 
 func main() {
-	_, err := mongodb.GetMongoConnection("mongodb://localhost:27017", "local", 10*time.Second)
+	_, err := mongodb.GetConnection("mongodb://localhost:27017", "local", 10*time.Second)
 	if err != nil {
 		log.Fatalf("Failed to connect to the MongoDB: %v", err)
 	}

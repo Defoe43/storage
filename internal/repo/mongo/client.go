@@ -13,8 +13,8 @@ type Connection struct {
 
 var db *Connection
 
-// GetMongoConnection returns a handle to the given database
-func GetMongoConnection(url, dbname string, timeout time.Duration) (dbConn *Connection, err error) {
+// GetConnection returns a handle to the given database
+func GetConnection(url, dbname string, timeout time.Duration) (dbConn *Connection, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -35,7 +35,7 @@ func GetMongoConnection(url, dbname string, timeout time.Duration) (dbConn *Conn
 		return db, nil
 	} else if err := db.database.Client().Ping(ctx, nil); err != nil {
 		db = nil
-		db, err := GetMongoConnection(url, dbname, timeout)
+		db, err := GetConnection(url, dbname, timeout)
 		if err != nil {
 			return nil, err
 		}

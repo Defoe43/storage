@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func UploadFile(w http.ResponseWriter, r *http.Request) {
+func uploadFile(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		log.Println("Error retrieving the file")
@@ -49,7 +49,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("OK"))
 }
 
-func DownloadFile(w http.ResponseWriter, r *http.Request) {
+func downloadFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
@@ -75,7 +75,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	http.ServeContent(w, r, filename, fileInfo.ModTime(), file)
 }
 
-func DeleteFile(w http.ResponseWriter, r *http.Request) {
+func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 

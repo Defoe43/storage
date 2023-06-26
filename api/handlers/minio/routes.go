@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func UploadFile(w http.ResponseWriter, r *http.Request) {
+func uploadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("minioUploadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
@@ -54,7 +54,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("OK"))
 }
 
-func DownloadFile(w http.ResponseWriter, r *http.Request) {
+func downloadFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("minioDownloadFile exec in: %v\n", time.Since(start))
 	}(time.Now())
@@ -84,7 +84,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteFile(w http.ResponseWriter, r *http.Request) {
+func deleteFile(w http.ResponseWriter, r *http.Request) {
 	defer func(start time.Time) {
 		fmt.Printf("minioDeleteFile exec in: %v\n", time.Since(start))
 	}(time.Now())
