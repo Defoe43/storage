@@ -10,7 +10,7 @@ stages:
 build-prod:
   stage: build
   only:
-    - main
+    - master
   tags:
     - prod
   before_script:
