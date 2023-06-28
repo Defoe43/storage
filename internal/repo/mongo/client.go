@@ -13,39 +13,38 @@ type Connection struct {
 
 var db *Connection
 
-// GetConnection returns a handle to the given database
-func GetConnection(url, dbname string, timeout time.Duration) (dbConn *Connection, err error) {
+func NewClient() (dbConn *Connection, err error) {
+	mgoUrl := "mongodb://localhost:27017"
+	dbName := "local"
+	timeout := 10 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if db == nil {
-		clientOptions := options.Client().ApplyURI(url)
-		client, err := mongo.Connect(ctx, clientOptions)
-		if err != nil {
-			return nil, err
-		}
-
-		err = client.Ping(ctx, nil)
-		if err != nil {
-			return nil, err
-		}
-
-		db = &Connection{database: client.Database(dbname)}
-
-		return db, nil
-	} else if err := db.database.Client().Ping(ctx, nil); err != nil {
-		db = nil
-		db, err := GetConnection(url, dbname, timeout)
-		if err != nil {
-			return nil, err
-		}
-
-		return db, nil
+	clientOptions := options.Client().ApplyURI(mgoUrl)
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		return nil, err
 	}
+
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	db = &Connection{database: client.Database(dbName)}
 
 	return db, nil
 }
 
-func GetDatabase() *Connection {
+func GetClient() *Connection {
+	if db == nil {
+		db, err := NewClient()
+		if err != nil {
+			return nil
+		}
+
+		return db
+	}
+
 	return db
 }

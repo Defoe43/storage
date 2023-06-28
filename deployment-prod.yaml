@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage
+  namespace: qwep-data-fortress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage
+  template:
+    metadata:
+      namespace: qwep-data-fortress
+      name: storage
+      labels:
+        app: storage
+    spec:
+      imagePullSecrets:
+        - name: qwep-docker-registry-login-secret
+      nodeSelector:
+        qwep-region: stateless
+      serviceAccountName: default
+      containers:
+        - name: storage-prod
+          image: qwep-docker-registry:5255/storage:0.0.1.prod
+          imagePullPolicy: Always

@@ -34,7 +34,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := mongodb.GetDatabase()
+	db := mongodb.GetClient()
 
 	err = db.PutFile(handler.Filename, fileBytes)
 	if err != nil {
@@ -54,7 +54,7 @@ func downloadFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	db := mongodb.GetDatabase()
+	db := mongodb.GetClient()
 
 	stream, err := db.GetFile(filename)
 	if err != nil {
@@ -82,7 +82,7 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	db := mongodb.GetDatabase()
+	db := mongodb.GetClient()
 	err := db.DeleteFile(filename)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to delete file %s", filename), http.StatusInternalServerError)

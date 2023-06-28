@@ -12,9 +12,12 @@ type Connection struct {
 var objectStorage *Connection
 
 func NewClient() (*Connection, error) {
-	endpoint := "localhost:9006"
-	accessKeyID := "qwep12345"
-	secretAccessKey := "qwep12345"
+	endpoint := "192.168.0.45:30960"
+	//endpoint := "localhost:9006"
+	accessKeyID := "3VZTiEVgzIf4oXn6RIym"
+	//accessKeyID := "qwep12345"
+	secretAccessKey := "wysjop-4nakQo-pycdav"
+	//secretAccessKey := "qwep12345"
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),

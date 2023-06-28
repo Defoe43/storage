@@ -1,0 +1,35 @@
+variables:
+  GET_SOURCES_ATTEMPTS: 3
+  CI_DEBUG_TRACE: "true"
+
+stages:
+  - build
+  - deploy
+
+#PROD
+build-prod:
+  stage: build
+  only:
+    - main
+  tags:
+    - prod
+  before_script:
+    - echo "don't open, dead inside"
+  script:
+    - echo "build new image"
+    - docker build --tag storage:0.0.1 .
+
+#PROD
+deploy:
+  stage: deploy
+  only:
+    - main
+  tags:
+    - prod
+  script:
+    - echo "do deploy to prod environment"
+    - docker login qwep-docker-registry:5255 -u qwep -p QwepBestPasswordEver2017
+    - docker tag storage:0.0.1 qwep-docker-registry:5255/storage:0.0.1.prod
+    - docker push qwep-docker-registry:5255/storage:0.0.1.prod
+    - kubectl apply -f ./namespace.yaml
+    - kubectl apply -f ./deployment-prod.yaml
