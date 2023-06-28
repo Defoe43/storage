@@ -23,7 +23,7 @@ build-prod:
 deploy:
   stage: deploy
   only:
-    - main
+    - master
   tags:
     - prod
   script:
