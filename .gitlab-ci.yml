@@ -32,4 +32,5 @@ deploy:
     - docker tag storage:0.0.1 qwep-docker-registry:5255/storage:0.0.1.prod
     - docker push qwep-docker-registry:5255/storage:0.0.1.prod
     - kubectl apply -f ./namespace.yaml
+    - kubectl apply -f ./storage-svc.yaml
     - kubectl apply -f ./deployment-prod.yaml

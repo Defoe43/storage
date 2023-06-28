@@ -1,27 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"github.com/dat-guy-defoe/storage/api/handlers"
 	"net/http"
 	"os"
 )
 
-var serverPort = os.Getenv("serverPort")
-
 func main() {
-	//_, err := mongodb.GetConnection("mongodb://localhost:27017", "local", 10*time.Second)
-	//if err != nil {
-	//	log.Fatalf("Failed to connect to the MongoDB: %v", err)
-	//}
-	//
-	//_, err = minio.GetClient()
-	//if err != nil {
-	//	log.Fatalf("Failed to connect to the Minio: %v", err)
-	//}
-
 	hs := &http.Server{
-		Addr:    fmt.Sprintf(":%s", serverPort),
+		Addr:    ":8080",
 		Handler: handlers.BuildHandler(),
 	}
 
