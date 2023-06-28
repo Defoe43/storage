@@ -1,7 +1,8 @@
 package minio
 
 import (
-	"github.com/minio/minio-go"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 type Connection struct {
@@ -11,7 +12,14 @@ type Connection struct {
 var objectStorage *Connection
 
 func NewClient() (*Connection, error) {
-	minioClient, err := minio.New("localhost:9006", "qwep12345", "qwep12345", false)
+	endpoint := "localhost:9006"
+	accessKeyID := "qwep12345"
+	secretAccessKey := "qwep12345"
+
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: false,
+	})
 	if err != nil {
 		return nil, err
 	}
