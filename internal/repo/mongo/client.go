@@ -14,7 +14,8 @@ type Connection struct {
 var db *Connection
 
 func NewClient() (dbConn *Connection, err error) {
-	mgoUrl := "mongodb://localhost:27017"
+	mgoUrl := "mongodb://root:8Slaw_FluKnoc@192.168.0.45:30967/"
+	//mgoUrl := "localhost:27017"
 	dbName := "local"
 	timeout := 10 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -36,15 +37,18 @@ func NewClient() (dbConn *Connection, err error) {
 	return db, nil
 }
 
-func GetClient() *Connection {
-	if db == nil {
-		db, err := NewClient()
-		if err != nil {
-			return nil
-		}
+func (c *Connection) CloseConnection() error {
+	err := c.database.Client().Disconnect(context.Background())
+	return err
+}
 
-		return db
+func GetClient() (db *Connection, err error) {
+	if db == nil {
+		db, err = NewClient()
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return db
+	return db, nil
 }

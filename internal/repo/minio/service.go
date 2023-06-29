@@ -1,13 +1,17 @@
 package minio
 
 import (
+	"bytes"
 	"context"
 	"github.com/minio/minio-go/v7"
 	"io"
 )
 
-func (c *Connection) PutObject(filename string, data *io.Reader) error {
-	_, err := c.client.PutObject(context.Background(), "log-files", filename, *data, -1, minio.PutObjectOptions{ContentType: "application/octet-stream"})
+func (c *Connection) PutObject(filename string, data []byte) error {
+	bytesReader := bytes.NewReader(data)
+	reader := io.Reader(bytesReader)
+
+	_, err := c.client.PutObject(context.Background(), "log-files", filename, reader, -1, minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
 		return err
 	}

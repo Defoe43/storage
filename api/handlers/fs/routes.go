@@ -2,7 +2,7 @@ package fs
 
 import (
 	"fmt"
-	"github.com/dat-guy-defoe/storage/internal/fs"
+	"github.com/dat-guy-defoe/storage/internal/repo/fs"
 	"github.com/gorilla/mux"
 	"io"
 	"log"

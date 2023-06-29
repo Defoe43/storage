@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"io"
 	"log"
 )
 
@@ -42,7 +43,7 @@ func (c *Connection) PutFile(filename string, data []byte) error {
 	return nil
 }
 
-func (c *Connection) GetFile(filename string) (*gridfs.DownloadStream, error) {
+func (c *Connection) GetFile(filename string) ([]byte, error) {
 	bucket, err := c.GetGridFSBucket()
 	if err != nil {
 		return nil, err
@@ -52,8 +53,14 @@ func (c *Connection) GetFile(filename string) (*gridfs.DownloadStream, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer stream.Close()
 
-	return stream, nil
+	data, err := io.ReadAll(stream)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return data, nil
 }
 
 func (c *Connection) DeleteFile(filename string) error {

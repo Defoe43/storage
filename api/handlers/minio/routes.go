@@ -1,7 +1,6 @@
 package minio
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/dat-guy-defoe/storage/internal/repo/minio"
 	"github.com/gorilla/mux"
@@ -41,9 +40,8 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	bytesReader := bytes.NewReader(fileBytes)
-	reader := io.Reader(bytesReader)
-	err = objSt.PutObject(handler.Filename, &reader)
+
+	err = objSt.PutObject(handler.Filename, fileBytes)
 	if err != nil {
 		http.Error(w, "Error saving the file", http.StatusInternalServerError)
 

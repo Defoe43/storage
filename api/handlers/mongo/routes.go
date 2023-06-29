@@ -34,7 +34,13 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := mongodb.GetClient()
+	db, err := mongodb.GetClient()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Repository access denied", http.StatusInternalServerError)
+
+		return
+	}
 
 	err = db.PutFile(handler.Filename, fileBytes)
 	if err != nil {
@@ -54,22 +60,26 @@ func downloadFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	db := mongodb.GetClient()
+	db, err := mongodb.GetClient()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Repository access denied", http.StatusInternalServerError)
 
-	stream, err := db.GetFile(filename)
+		return
+	}
+
+	data, err := db.GetFile(filename)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Failed to get the file", http.StatusInternalServerError)
 
 		return
 	}
-	defer stream.Close()
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", "attachment; filename="+filename)
-	_, err = io.Copy(w, stream)
+	_, err = w.Write(data)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, "Failed to get the file", http.StatusInternalServerError)
 	}
 }
@@ -82,8 +92,15 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filename := vars["fileName"]
 
-	db := mongodb.GetClient()
-	err := db.DeleteFile(filename)
+	db, err := mongodb.GetClient()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Repository access denied", http.StatusInternalServerError)
+
+		return
+	}
+
+	err = db.DeleteFile(filename)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to delete file %s", filename), http.StatusInternalServerError)
 
