@@ -11,9 +11,9 @@ import (
 	"log"
 )
 
-func (c *Connection) GetGridFSBucket() (*gridfs.Bucket, error) {
+func (r *Repository) getGridFSBucket() (*gridfs.Bucket, error) {
 	bucket, err := gridfs.NewBucket(
-		c.database,
+		r.database,
 		options.GridFSBucket().SetName("log_files"),
 	)
 	if err != nil {
@@ -23,8 +23,8 @@ func (c *Connection) GetGridFSBucket() (*gridfs.Bucket, error) {
 	return bucket, nil
 }
 
-func (c *Connection) PutFile(filename string, data []byte) error {
-	bucket, err := c.GetGridFSBucket()
+func (r *Repository) PutFile(filename string, data []byte) error {
+	bucket, err := r.getGridFSBucket()
 	if err != nil {
 		log.Println(err)
 	}
@@ -43,8 +43,8 @@ func (c *Connection) PutFile(filename string, data []byte) error {
 	return nil
 }
 
-func (c *Connection) GetFile(filename string) ([]byte, error) {
-	bucket, err := c.GetGridFSBucket()
+func (r *Repository) GetFile(filename string) ([]byte, error) {
+	bucket, err := r.getGridFSBucket()
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +63,9 @@ func (c *Connection) GetFile(filename string) ([]byte, error) {
 	return data, nil
 }
 
-func (c *Connection) DeleteFile(filename string) error {
-	fsFiles := c.database.Collection("log_files.files")
-	fsChunks := c.database.Collection("log_files.chunks")
+func (r *Repository) DeleteFile(filename string) error {
+	fsFiles := r.database.Collection("log_files.files")
+	fsChunks := r.database.Collection("log_files.chunks")
 
 	filter := bson.M{"filename": filename}
 	var result bson.M
